@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 // update the response for the promotionRouter
 const Promotion = require("../models/promotion");
+const authenticate = require('../authenticate');
 const { response } = require("express");
 
 const promotionRouter = express.Router();
@@ -24,7 +25,7 @@ promotionRouter
       })
       .catch((err) => next(err));
   })
-  .post((req, res, next) => {
+  .post(authenticate.verifyUser, (req, res, next) => {
     Promotion.create(req.body)
       .then((promotion) => {
         console.log("PartnerCreated", promotion);
@@ -37,18 +38,18 @@ promotionRouter
     //     `Will add the promotion: ${req.body.name} with description: ${req.body.description}`
     // );
   })
-  .put((req, res) => {
+  .put(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end("PUT operation not supported on /promotions");
   })
-  .delete((req, res, next) => {
-      Promotion.deleteMany()
-      .then(response => {
-          res.statusCode = 200;
-          res.setHeader("Content-Type", 'application/json');
-          res.json(response);
+  .delete(authenticate.verifyUser, (req, res, next) => {
+    Promotion.deleteMany()
+      .then((response) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(response);
       })
-      .catch(err => next(err));
+      .catch((err) => next(err));
     // res.end("Deleting all promotions");
   });
 
@@ -70,13 +71,13 @@ promotionRouter
       .catch((err) => next(err));
     // res.end(`Will send details of the promotion: ${req.params.promotionId} to you`);
   })
-  .post((req, res) => {
+  .post(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end(
       `POST operation not supported on /promotions/${req.params.promotionId}`
     );
   })
-  .put((req, res, next) => {
+  .put(authenticate.verifyUser, (req, res, next) => {
     Promotion.findByIdAndUpdate(
       req.params.promotionId,
       {
@@ -97,14 +98,14 @@ promotionRouter
     // );
     // res.end(`Will update the promotion: ${req.body.name} with description: ${req.body.description}`);
   })
-  .delete((req, res, next) => {
-      Promotion.findByIdAndDelete(req.params.promotionId)
-        .then((response) => {
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "application/json");
-          res.json(response);
-        })
-        .catch((err) => next(err));
+  .delete(authenticate.verifyUser, (req, res, next) => {
+    Promotion.findByIdAndDelete(req.params.promotionId)
+      .then((response) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(response);
+      })
+      .catch((err) => next(err));
     // res.end(`Deleting promotions: ${req.params.promotionId}`);
   });
 
