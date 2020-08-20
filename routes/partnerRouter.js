@@ -11,11 +11,6 @@ partnerRouter.use(bodyParser.json());
 // endpoint routing
 partnerRouter
   .route("/")
-  // .all((req, res, next) => {
-  //     res.statusCode = 200;
-  //     res.setHeader("Content-Type", "text/plain");
-  //     next();
-  // })
   .get((req, res, next) => {
     Partner.find()
       .then((partners) => {
@@ -34,9 +29,7 @@ partnerRouter
         res.json(partner);
       })
       .catch((err) => next(err));
-    // res.end(
-    //     `Will add the partner: ${req.body.name} with description: ${req.body.description}`
-    // );
+    
   })
   .put(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
@@ -50,17 +43,11 @@ partnerRouter
         res.json(response);
       })
       .catch((err) => next(err));
-    // res.end("Deleting all partners");
   });
 
 // Transition of the routing methods
 partnerRouter
   .route("/:partnerId")
-  // .all((req, res, next) => {
-  //     res.statusCode = 200;
-  //     res.setHeader("Content-Type", "text/plain");
-  //     next();
-  // })
   .get((req, res, next) => {
     Partner.findById(req.params.partnerId)
       .then((partner) => {
@@ -69,7 +56,6 @@ partnerRouter
         res.json(partner);
       })
       .catch((err) => next(err));
-    // res.end(`Will send details of the partner: ${req.params.partnerId} to you`);
   })
   .post(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
@@ -94,10 +80,6 @@ partnerRouter
       })
       .catch((err) => next(err));
 
-    // res.write(
-    //     `Updating the partner: ${req.params.partnerId}\n`
-    // );
-    // res.end(`Will update the partner: ${req.body.name} with description: ${req.body.description}`);
   })
   .delete(authenticate.verifyUser, (req, res, next) => {
     Partner.findByIdAndDelete(req.params.partnerId)
@@ -107,7 +89,6 @@ partnerRouter
         res.json(response);
       })
       .catch((err) => next(err));
-    // res.end(`Deleting partners: ${req.params.partnerId}`);
   });
 
 module.exports = partnerRouter;

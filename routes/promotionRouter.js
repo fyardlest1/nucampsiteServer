@@ -11,11 +11,6 @@ promotionRouter.use(bodyParser.json());
 
 promotionRouter
   .route("/")
-  // .all((req, res, next) => {
-  //     res.statusCode = 200;
-  //     res.setHeader("Content-Type", "text/plain");
-  //     next();
-  // })
   .get((req, res, next) => {
     Promotion.find()
       .then((promotions) => {
@@ -34,9 +29,6 @@ promotionRouter
         res.json(promotion);
       })
       .catch((err) => next(err));
-    // res.end(
-    //     `Will add the promotion: ${req.body.name} with description: ${req.body.description}`
-    // );
   })
   .put(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
@@ -50,17 +42,11 @@ promotionRouter
         res.json(response);
       })
       .catch((err) => next(err));
-    // res.end("Deleting all promotions");
   });
 
 // Transition of the routing methods
 promotionRouter
   .route("/:promotionId")
-  // .all((req, res, next) => {
-  //     res.statusCode = 200;
-  //     res.setHeader("Content-Type", "text/plain");
-  //     next();
-  // })
   .get((req, res, next) => {
     Promotion.findById(req.params.promotionId)
       .then((promotion) => {
@@ -69,7 +55,6 @@ promotionRouter
         res.json(promotion);
       })
       .catch((err) => next(err));
-    // res.end(`Will send details of the promotion: ${req.params.promotionId} to you`);
   })
   .post(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
@@ -93,10 +78,6 @@ promotionRouter
         res.json(promotion);
       })
       .catch((err) => next(err));
-    // res.write(
-    //     `Updating the promotion: ${req.params.promotionId}\n`
-    // );
-    // res.end(`Will update the promotion: ${req.body.name} with description: ${req.body.description}`);
   })
   .delete(authenticate.verifyUser, (req, res, next) => {
     Promotion.findByIdAndDelete(req.params.promotionId)
@@ -106,7 +87,6 @@ promotionRouter
         res.json(response);
       })
       .catch((err) => next(err));
-    // res.end(`Deleting promotions: ${req.params.promotionId}`);
   });
 
 module.exports = promotionRouter;
