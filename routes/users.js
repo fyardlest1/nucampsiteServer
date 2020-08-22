@@ -6,9 +6,16 @@ const { application } = require("express");
 
 const router = express.Router();
 
-/* GET users listing. */
-router.get("/", function (req, res, next) {
-  res.send("respond with a resource");
+/* GET users listing. Complete the GET /users endpoint */
+router.get("/", authenticate.verifyUser, authenticate.verifyAdmin, function (req, res, next) {
+  User.find()
+    .then((users) => {
+      res.statusCode = 200;
+      res.setHeader("Content-Type", "application/json");
+      res.json(users);
+    })
+    .catch((err) => next(err));
+  // res.send("respond with a resource");
 });
 
 router.post("/signup", (req, res) => {
@@ -63,7 +70,7 @@ router.get("/logout", (req, res, next) => {
     res.redirect("/");
   } else {
     const err = new Error("You are not logged in!");
-    err.status = 401;
+    err.status = 403;
     return next(err);
   }
 });
