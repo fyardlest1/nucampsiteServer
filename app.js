@@ -1,12 +1,12 @@
-let createError = require('http-errors');
-let express = require('express');
-let path = require('path');
-let logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const logger = require('morgan');
 const passport = require("passport");
 const config = require("./config");
 
-let indexRouter = require('./routes/index');
-let usersRouter = require('./routes/users');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
 const campsiteRouter = require('./routes/campsiteRouter');
 const partnerRouter = require('./routes/partnerRouter');
 const promotionRouter = require('./routes/promotionRouter');
@@ -25,7 +25,17 @@ connect.then(() => console.log('Connected correctly to server'),
   err => console.log(err)
 );
 
-let app = express();
+const app = express();
+
+// Secure traffic only
+app.all('*', (req, res, next) => {
+  if (req.secure) {
+    return next();
+  } else {
+    console.log(`Redirection to: https://${req.hostname}:${app.get('secPort')}${req.url}`);
+    res.redirect(301, `https://${req.hostname}:${app.get('secPort')}${req.url}`);
+  }
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

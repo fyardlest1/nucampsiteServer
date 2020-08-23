@@ -61,12 +61,13 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
     token: token,
     status: "You are successfully logged in!",
   });
+  // res.cookie("cookie", token);
 });
 
 router.get("/logout", (req, res, next) => {
   if (req.session) {
-    req.session.destroy();
-    res.clearCookie("session-id");
+    req.session.destroy();    
+    res.clearCookie("session-id"); 
     res.redirect("/");
   } else {
     const err = new Error("You are not logged in!");
