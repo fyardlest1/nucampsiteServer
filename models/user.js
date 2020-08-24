@@ -11,10 +11,7 @@ const userSchema = new Schema({
     type: String,
     default: "",
   },
-  // password: {
-  //   type: String,
-  //   required: true,
-  // },
+  facebookId: String,
   admin: {
     type: Boolean,
     default: false,
