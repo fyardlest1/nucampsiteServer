@@ -1,6 +1,7 @@
 const express = require("express");
 const authenticate = require("../authenticate");
 const multer = require("multer");
+const cors = require("./cors");
 
 // Custom configuration - Determine the way multer handle file uploads
 const storage = multer.diskStorage({
@@ -29,17 +30,15 @@ const upload = multer({ storage: storage, fileFilter: imageFileFilter });
 const uploadRouter = express.Router();
 
 // Confugure the upload router to handle verious http request
-uploadRouter
-  .route("/")
+uploadRouter.route("/")
+.options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
   // The get have series of midleware as argument
-  .get(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+  .get(cors.cors, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end("GET operation not supported on /imageUpload");
   })
   // In the post request we add the aupload midleware
-  .post(
-    authenticate.verifyUser,
-    authenticate.verifyAdmin,
+  .post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin,
     upload.single("imageFile"),
     (req, res) => {
       res.statusCode = 200;
@@ -47,14 +46,11 @@ uploadRouter
       res.json(req.file);
     }
   )
-  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+  .put(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end("PUT operation not supported on /imageUpload");
   })
-  .delete(
-    authenticate.verifyUser,
-    authenticate.verifyAdmin,
-    (req, res, next) => {
+  .delete(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
       res.statusCode = 403;
       res.end("DELETE operation not supported on /imageUpload");
     }

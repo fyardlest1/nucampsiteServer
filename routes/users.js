@@ -2,12 +2,13 @@ const express = require("express");
 const User = require("../models/user");
 const passport = require('passport');
 const authenticate = require('../authenticate');
+const cors = require("./cors");
 const { application } = require("express");
 
 const router = express.Router();
 
 /* GET users listing. Complete the GET /users endpoint */
-router.get("/", authenticate.verifyUser, authenticate.verifyAdmin, function (req, res, next) {
+router.get("/", cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, function (req, res, next) {
   User.find()
     .then((users) => {
       res.statusCode = 200;
@@ -18,7 +19,7 @@ router.get("/", authenticate.verifyUser, authenticate.verifyAdmin, function (req
   // res.send("respond with a resource");
 });
 
-router.post("/signup", (req, res) => {
+router.post("/signup", cors.corsWithOptions, (req, res) => {
   User.register(
     new User({ username: req.body.username }),
     req.body.password,
@@ -38,7 +39,7 @@ router.post("/signup", (req, res) => {
           if (err) {
             res.statusCode = 500;
             res.setHeader("Content-Type", "application/json");
-            res.json({err: err});
+            res.json({ err: err });
             return;
           }
           passport.authenticate("local")(req, res, () => {
@@ -52,7 +53,7 @@ router.post("/signup", (req, res) => {
   );
 });
 
-router.post("/login", passport.authenticate("local"), (req, res) => {
+router.post("/login", cors.corsWithOptions, passport.authenticate("local"), (req, res) => {
   const token = authenticate.getToken({ _id: req.user._id });
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");
@@ -64,10 +65,10 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
   // res.cookie("cookie", token);
 });
 
-router.get("/logout", (req, res, next) => {
+router.get("/logout", cors.corsWithOptions, (req, res, next) => {
   if (req.session) {
-    req.session.destroy();    
-    res.clearCookie("session-id"); 
+    req.session.destroy();
+    res.clearCookie("session-id");
     res.redirect("/");
   } else {
     const err = new Error("You are not logged in!");
