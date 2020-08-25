@@ -5,6 +5,7 @@ const authenticate = require('../authenticate');
 const cors = require('./cors');
 const { response } = require("express");
 
+// Creating the campsiteRouter
 const campsiteRouter = express.Router();
 
 campsiteRouter.use(bodyParser.json());

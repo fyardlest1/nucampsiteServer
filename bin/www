@@ -34,22 +34,22 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 /**
- * Create HTTPS server
- */
+ * Create HTTPS server.
+ */ 
+ 
+const options = {
+    key: fs.readFileSync(__dirname+'/server.key'),
+    cert: fs.readFileSync(__dirname+'/server.cert')
+};
 
- const options = {
-   key: fs.readFileSync(__dirname+'/server.key'),
-   cert: fs.readFileSync(__dirname+'/server.cert')
- }
-
- const secureServer = https.createServer(options, app);
+const secureServer = https.createServer(options, app);
 
 /**
-* Listen on provided port, on all network interfaces.
-*/
+ * Listen on provided port, on all network interfaces.
+ */
 
 secureServer.listen(app.get('secPort'), () => {
-  console.log('Server listening on port', app.get('secPort'));
+   console.log('Server listening on port ', app.get('secPort'));
 });
 secureServer.on('error', onError);
 secureServer.on('listening', onListening);

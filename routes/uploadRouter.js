@@ -29,15 +29,15 @@ const upload = multer({ storage: storage, fileFilter: imageFileFilter });
 // Setup the router
 const uploadRouter = express.Router();
 
-// Confugure the upload router to handle verious http request
+// Configure the upload router to handle various http request
 uploadRouter.route("/")
 .options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
-  // The get have series of midleware as argument
+  // The get have series of middleware as argument
   .get(cors.cors, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end("GET operation not supported on /imageUpload");
   })
-  // In the post request we add the aupload midleware
+  // In the post request we add the upload middleware 
   .post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin,
     upload.single("imageFile"),
     (req, res) => {
