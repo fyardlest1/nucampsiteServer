@@ -29,11 +29,11 @@ favoriteRouter.route("/")
     .then(favorite => {
         // Checking if the user has an associated favorite document
         if (favorite) {
-            req.body.forEach((favorite) => {
+            req.body.forEach((favId) => {
                 // If the favorite campsite not include the _id
-                if (!favorite.campsites.includes(favorite._id)) {
+                if (!favorite.campsites.includes(favId._id)) {
                     // Just add it into the array
-                    favorite.campsites.push(favorite._id);
+                    favorite.campsites.push(favId._id);
                 }
                 // And save it
                 favorite.save()
@@ -81,47 +81,54 @@ favoriteRouter.route('/:campsiteId')
 .options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
     .get(cors.cors, authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
-    res.end("GET operation not supported on /favorites");
+    res.end(`GET operation not supported on /favorites/${req.params.campsiteId}`);
 })
 .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
-    Favorite.findById(req.params.campsiteID)
-    .then(favorite => {
+    Favorite.findOne({ user: req.user._id })
+      .then((favorite) => {
         // If the campsite is not already in the list of favorites
-        // add the campsite specified in the URL parameter to the list of the user's list of favorite campsites 
+        // add the campsite specified in the URL parameter to the list of the user's list of favorite campsites
         if (favorite) {
-            if (!favorite.campsites.includes(req.params.campsiteId)) {
-                favorite.campsites.push(req.params.campsiteId);
-                favorite.save()
-                .then(favorite => {
-                    res.statusCode = 200;
-                    res.setHeader('Content-Type', 'application/json');
-                    res.json(favorite);
-                })
-                .catch(err => next(err));
-            } 
-            // If the campsite is already in the list return an error
-            else {
-                const err = new Error("That campsite is already in the list of favorites!");
-                err.status = 404;
-                return next(err);
-            }
-        } 
+          if (!favorite.campsites.includes(req.params.campsiteId)) {
+            favorite.campsites.push(req.params.campsiteId);
+            favorite
+              .save()
+              .then((favorite) => {
+                res.statusCode = 200;
+                res.setHeader("Content-Type", "application/json");
+                res.json(favorite);
+              })
+              .catch((err) => next(err));
+          }
+          // If the campsite is already in the list return an error
+          else {
+            const err = new Error(
+              "That campsite is already in the list of favorites!"
+            );
+            err.status = 404;
+            return next(err);
+          }
+        }
         // Creating the campsite if it not exist
         else {
-            Favorite.create({ user: req.user._id, campsites: [req.params.campsiteId] })
-            .then(favorite => {
-                res.statusCode = 200;
-                res.setHeader('Content-Type', 'application/json');
-                res.json(favorite);
+          Favorite.create({
+            user: req.user._id,
+            campsites: [req.params.campsiteId],
+          })
+            .then((favorite) => {
+              res.statusCode = 200;
+              res.setHeader("Content-Type", "application/json");
+              res.json(favorite);
             })
-            .catch(err => next(err));
+            .catch((err) => next(err));
         }
-    })
-    .catch((err) => next(err));
+      })
+      .catch((err) => next(err));
 })
 .put(cors.corsWithOptions, authenticate.verifyUser, (req, res) => {
-    res.statusCode = 403;
-    res.end("PUT operation not supported on /favorites");
+    // res.statusCode = 403;
+    // res.end("PUT operation not supported on /favorites");
+    res.statusCode(403).end("PUT operation not supported on /favorites");
 })
 .delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Favorite.findOne({ user: req.user._id })
@@ -152,24 +159,6 @@ favoriteRouter.route('/:campsiteId')
     })
     .catch(err => next(err));
 
-    // if (!favorite) {
-    //     favorite.campsites.push()
-    //     favorite.save()
-    //         .then(favorite => {
-    //             res.statusCode = 200;
-    //             res.setHeader("Content-Type", "application/json");
-    //             res.json(favorite);
-    //         })
-    //         .catch((err) => next(err));
-    // }
-
-    // Favorite.findByIdAndDelete({ user: req.user._id })
-    // .then((response) => {
-    //     res.statusCode = 200;
-    //     res.setHeader("Content-Type", "application/json");
-    //     res.json(response);
-    // })
-    // .catch((err) => next(err));
 });
 
 // Exporting the favoriteRouter
