@@ -66,13 +66,24 @@ favoriteRouter.route("/")
  * by deleting the favorite document corresponding to this user 
  * from the favorites collection. */
 .delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
-    Favorite.deleteOne({ user: req.user._id })
-      .then((response) => {
-        res.statusCode = 200;
-        res.setHeader("Content-Type", "application/json");
-        res.json(response);
-      })
-      .catch((err) => next(err));
+    Favorite.findOne({ user: req.user._id })
+        .then((favorite) => {
+        if (favorite) {
+            favorite
+            .remove()
+            .then((favorite) => {
+                res.statusCode = 200;
+                res.setHeader("Content-Type", "application/json");
+                res.json(favorite);
+            })
+            .catch((err) => next(err));
+        } else {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.json(favorite);
+        }
+        })
+        .catch((err) => next(err));
 });
 
 // Setting up CORS for favoriteRouter.route("/campsiteId")
