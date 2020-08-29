@@ -139,12 +139,12 @@ favoriteRouter.route('/:campsiteId')
                 favorite.campsites.splice(favIndex, 1);
                 favorite.save()
                 res.statusCode = 200;
-                res.setHeader('Content-Type', 'application/json');
-                res.json(favorite);
+                res.setHeader('Content-Type', 'text');
+                res.end("The favorite was remove successfully.");
             } else {
                 res.statusCode = 200;
-                res.setHeader('Content-Type', 'application/json');
-                res.json(favorite);
+                res.setHeader('Content-Type', 'text');
+                res.end("The campsite you try to delete is not on the favorite.");
             }
         } else {
             res.statusCode = 200;
